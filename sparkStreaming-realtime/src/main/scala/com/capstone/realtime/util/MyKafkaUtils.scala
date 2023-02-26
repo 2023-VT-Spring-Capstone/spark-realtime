@@ -42,7 +42,8 @@ object MyKafkaUtils {
   )
 
   /**
-    * 基于SparkStreaming消费 ,获取到KafkaDStream , 使用默认的offset
+    * Consuming base on SparkStreaming, use default offset value
+    * return KafkaDStream
     */
   def getKafkaDStream(ssc : StreamingContext , topic: String  , groupId:String  ) ={
     consumerConfigs.put(ConsumerConfig.GROUP_ID_CONFIG , groupId)
@@ -54,7 +55,7 @@ object MyKafkaUtils {
   }
 
   /**
-    * 基于SparkStreaming消费 ,获取到KafkaDStream , 使用指定的offset
+    * Consuming base on SparkStreaming, use assigned offset value
     */
   def getKafkaDStream(ssc : StreamingContext , topic: String  , groupId:String ,  offsets: Map[TopicPartition, Long]  ) ={
     consumerConfigs.put(ConsumerConfig.GROUP_ID_CONFIG , groupId)

@@ -21,12 +21,28 @@ object OdsBaseLogApp {
     //2. Consume data from Kafka
     val topicName : String = "ODS_BASE_LOG"  //application.yaml 对应生成器配置中的主题名
     val groupId : String = "ODS_BASE_LOG_GROUP" //隨便寫
+    // Read offset from Redis (from driver)
+    val offsets: Map[TopicPartition, Long] = MyOffsetsUtils.readOffset(topicName, groupId)
 
-    var kafkaDStream: InputDStream[ConsumerRecord[String, String]] =
-                  MyKafkaUtils.getKafkaDStream(ssc, topicName, groupId)
+    var kafkaDStream: InputDStream[ConsumerRecord[String, String]] = null
+    if (offsets != null && offsets.nonEmpty) { //assign offsets value
+      kafkaDStream = MyKafkaUtils.getKafkaDStream(ssc, topicName, groupId, offsets)
+    } else { //use default offset
+      kafkaDStream = MyKafkaUtils.getKafkaDStream(ssc, topicName, groupId)
+    }
 
-    //object to json
-    val jsonObjDStream: DStream[JSONObject] = kafkaDStream.map(
+    // extract offsets from the fetched data before manipulating it.
+    var offsetRanges: Array[OffsetRange] = null
+    val offsetRangesDStream: DStream[ConsumerRecord[String, String]] = kafkaDStream.transform(
+      rdd => {
+        offsetRanges = rdd.asInstanceOf[HasOffsetRanges].offsetRanges
+        rdd
+      }
+    )
+
+    //DATA PROCESSING
+    //DATA PROCESSING - 1.transform the form from object to json
+    val jsonObjDStream: DStream[JSONObject] = offsetRangesDStream.map(
       consumerRecord => {
         //获取ConsumerRecord中的value,value就是日志数据
         val log: String = consumerRecord.value()
@@ -36,9 +52,11 @@ object OdsBaseLogApp {
         jsonObj
       }
     )
-//    //TODO test consuming data from kafka
+
+//    TODO: try consume data from kafka here
 //    jsonObjDStream.print(1000)
-    //3.2 SPLIT the STREAM
+
+    //DATA PROCESSING - 2. SPLIT the stream to substreams based on topics
     // 日志数据：
     //   页面访问数据 visit data(dependency: page -> displays -> actions)
     //      公共字段 common
@@ -165,13 +183,19 @@ object OdsBaseLogApp {
                   MyKafkaUtils.send(DWD_START_LOG_TOPIC, JSON.toJSONString(startLog, new SerializeConfig(true)))
                 }
               }
+              //submit offset here ??? execute in "Executor", run once per data
             }
             MyKafkaUtils.flush()
           }
         )
-//TODO: save the offset
+        // 一个批次保存完后，保存偏移量  【思考保存偏移量的位置  foreachPartition内？ foreachRDD内？ foreachRDD外？】
+        //submit offset here ??? execute in Driver, run for each batch
+        MyOffsetsUtils.saveOffset(topicName, groupId, offsetRanges)
+        // TODO right now we've ensure an "at lease once" consumption, but data may duplicate
+        // need to maintain idempotency in the future (by elasticsearch ?)
       }
     )
+    //submit offset here ??? execute in Driver, run once when the application start
     ssc.start()
     ssc.awaitTermination()
   }

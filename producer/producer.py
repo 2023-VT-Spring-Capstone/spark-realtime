@@ -1,6 +1,5 @@
 import praw
 from kafka import KafkaProducer
-import
 import threading
 import json
 import time

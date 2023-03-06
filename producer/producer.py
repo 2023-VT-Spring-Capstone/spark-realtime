@@ -1,5 +1,6 @@
 import praw
 from kafka import KafkaProducer
+import
 import threading
 import json
 import time
@@ -8,8 +9,8 @@ reddit = praw.Reddit(
     client_id='rl5NKpg-FlnwfaEqRDazsA',
     client_secret='9N-oaVh3FvKdCouv2CJPy-XrYjaiTg',
     user_agent='kafka-producer',
-    username='huaiche94',
-    password='Roy830120*')
+    username='',
+    password='')
 
 # Kafka Producer configuration
 kafka_config = {

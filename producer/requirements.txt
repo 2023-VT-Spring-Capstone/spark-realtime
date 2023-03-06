@@ -1,0 +1,4 @@
+kafka-python
+praw~=7.7.0
+flask~=2.2.3
+Faker~=17.6.0

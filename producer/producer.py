@@ -1,8 +1,8 @@
 import praw
+from datetime import datetime
 from kafka import KafkaProducer
 import threading
 import json
-import time
 
 reddit = praw.Reddit(
     client_id='rl5NKpg-FlnwfaEqRDazsA',
@@ -102,14 +102,23 @@ def handle_subreddit_updates(subreddit_names, topic):
             subreddit = reddit.subreddit(subreddit_name)
             for submission in subreddit.stream.submissions():
                 post_data = {
+                    "author": submission.author,
+                    "author_flair_text": submission.author_flair_text,
+                    "created_time": datetime.utcfromtimestamp(submission.created_utc).strftime('%Y-%m-%dT%H:%M:%S.%fZ'),
                     "id": submission.id,
+                    "is_original": submission.is_original_content,
+                    "is_self": submission.is_self,
+                    "permalink": submission.permalink,
                     "title": submission.title,
                     "body": submission.selftext,
                     "score": submission.score,
+                    "upvote_ratio": submission.upvote_ratio,
                     "num_comments": submission.num_comments,
                     "url": submission.url,
                     'subreddit': subreddit.display_name
                 }
+                if post_data['author'] is not None:
+                    post_data['author'] = post_data['author'].name
                 kafka_producer.send(topic, value=post_data)
 
 

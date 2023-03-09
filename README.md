@@ -43,6 +43,50 @@ reference: https://praw.readthedocs.io/en/stable/code_overview/models/submission
 
 
 ### Yahoo finance data
+reference: https://pypi.org/project/yfinance/
+
+The historical market data of a specified stock:
+
 |name|attribute|description|
 |---|---|---|
-|||
+|"trade_date"|history.Date|The date of a particular trading day.|
+|"open"|history.Open|The opening price of the stock for the trading day.|
+|"high"|history.High|The highest price the stock reached during the trading day.|
+|"low"|history.Low|The lowest price the stock reached during the trading day.|
+|"close"|history.Close|The closing price of the stock for the trading day.|
+|"volume"|history.Volume|The total number of shares traded during the trading day.|
+
+The corporate actions taken by the company of the specified stock:
+
+|name|attribute|description|
+|---|---|---|
+|"action_date"|actions.Date|The date on which the corporate action occurred.|
+|"dividends"|actions.Dividends|The dividend payment(s) made by the company on the given date.|
+|"stock_splits"|actions.Stock Splits|The stock split(s) that occurred on the given date, expressed as a ratio (e.g. "2:1")|
+
+The snapshot of the current state of a specified stock:
+
+|name|attribute|description|
+|---|---|---|
+|"currency"|fast_info.currency|The currency in which the financial instrument is priced.|
+|"day_high"|fast_info.dayHigh|The highest price of the day for the financial instrument.|
+|"day_low"|fast_info.dayLow|The lowest price of the day for the financial instrument.|
+|"exchange"|fast_info.exchange|The exchange on which the financial instrument is listed.|
+|"fifty_day_average"|fast_info.fiftyDayAverage|The average price of the financial instrument over the last fifty days.|
+|"last_price"|fast_info.lastPrice|The last traded price of the financial instrument.|
+|"last_volume"|fast_info.lastVolume|The volume of the last trade for the financial instrument.|
+|"market_cap"|fast_info.marketCap|The market capitalization of the financial instrument.|
+|"day_open"|fast_info.open|The opening price of the financial instrument for the day.|
+|"pre_close"|fast_info.previousClose|The previous day's closing price of the financial instrument.|
+|"quote_type"|fast_info.quoteType|The type of financial instrument.|
+|"reg_pre_close"|fast_info.regularMarketPreviousClose|The previous regular trading hours closing price of the financial instrument.|
+|"num_shares"|fast_info.shares|The number of shares outstanding for the financial instrument.|
+|"ten_day_aver_vol"|fast_info.tenDayAverageVolume|The ten-day average volume for the financial instrument.|
+|"three_month_aver_vol"|fast_info.threeMonthAverageVolume|The three-month average volume for the financial instrument.|
+|"timezone"|fast_info.timezone|The timezone of the exchange where the financial instrument is listed.|
+|"two_hundred_day_aver"|fast_info.twoHundredDayAverage|The two-hundred-day average price of the financial instrument.|
+|"year_change"|fast_info.yearChange|The change in the price of the financial instrument over the year.|
+|"year_high"|fast_info.yearHigh|The highest price of the financial instrument over the year.|
+|"year_low"|fast_info.yearLow|The lowest price of the financial instrument over the year.|
+
+

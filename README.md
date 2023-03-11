@@ -45,7 +45,7 @@ reference: https://praw.readthedocs.io/en/stable/code_overview/models/submission
 ### Yahoo finance data
 reference: https://pypi.org/project/yfinance/
 
-The historical market data of a specified stock:
+The historical market data of a given stock:
 
 |name|attribute|description|
 |---|---|---|
@@ -56,7 +56,7 @@ The historical market data of a specified stock:
 |"close"|history.Close|The closing price of the stock for the trading day.|
 |"volume"|history.Volume|The total number of shares traded during the trading day.|
 
-The corporate actions taken by the company of the specified stock:
+The corporate actions taken by the company of a given stock:
 
 |name|attribute|description|
 |---|---|---|
@@ -64,7 +64,7 @@ The corporate actions taken by the company of the specified stock:
 |"dividends"|actions.Dividends|The dividend payment(s) made by the company on the given date.|
 |"stock_splits"|actions.Stock Splits|The stock split(s) that occurred on the given date, expressed as a ratio (e.g. "2:1")|
 
-The snapshot of the current state of a specified stock:
+The snapshot of the current state of a given stock:
 
 |name|attribute|description|
 |---|---|---|
@@ -88,5 +88,76 @@ The snapshot of the current state of a specified stock:
 |"year_change"|fast_info.yearChange|The change in the price of the stock over the year.|
 |"year_high"|fast_info.yearHigh|The highest price of the stock over the year.|
 |"year_low"|fast_info.yearLow|The lowest price of the stock over the year.|
+
+The history meta data of a given stock:
+
+|name|attribute|description|
+|---|---|---|
+|currency|history_metadata.currency|The currency in which the stock is priced.|
+|symbol|history_metadata.symbol|The ticker symbol for the stock.|
+|exchange_name|history_metadata.exchangeName|The name of the exchange on which the stock is traded.|
+|instrument_type|history_metadata.instrumentType|The type of stock (e.g., common stock, preferred stock, ETF, etc.).|
+|first_trade_date|history_metadata.firstTradeDate|The date and time of the first trade for the stock.|
+|regular_market_time|history_metadata.regularMarketTime|The date and time of the most recent trade for the stock.|
+|gmt_offset|history_metadata.gmtoffset|The GMT offset for the time zone in which the stock is traded.|
+|timezone|history_metadata.timezone|The time zone in which the stock is traded.|
+|exchange_tz_name|history_metadata.exchangeTimezoneName|The name of the time zone in which the stock is traded.|
+|reg_market_price|history_metadata.regularMarketPrice|The price of the stock at the most recent trade.|
+|chart_prev_close|history_metadata.chartPreviousClose|The previous close price for the stock.|
+|price_hint|history_metadata.priceHint|A hint for the number of decimal places to display when showing prices.|
+|curr_pre_market_start|history_metadata.currentTradingPeriod|The start trading time for the pre-market.|
+|curr_pre_market_end|history_metadata.currentTradingPeriod|The end trading time for the pre-market.|
+|curr_reg_market_start|history_metadata.currentTradingPeriod|The start trading time for the regular market.|
+|curr_reg_market_end|history_metadata.currentTradingPeriod|The end trading time for the regular market.|
+|curr_post_market_start|history_metadata.currentTradingPeriod|The start trading time for the post-market.|
+|curr_post_market_end|history_metadata.currentTradingPeriod|The end trading time for the post-market.|
+|data_granularity|history_metadata.dataGranularity|The granularity of the historical data for the stock.|
+|range|history_metadata.range|The time range for the historical data for the stock.|
+|valid_ranges|history_metadata.validRanges|A list of valid time ranges for the historical data for the stock.|
+
+The historical share count data of a given stock:
+
+|name|attribute|description|
+|---|---|---|
+|date|N/A|The date and time.|
+|share_count|N/A|The number of outstanding shares of the stock at the given date and time.|
+
+The major holders data of a given stock:
+
+|name|attribute|description|
+|---|---|---|
+|insider_hold_pct|N/A|Percentage of shares held by all insiders.|
+|inst_hold_pct|N/A|Percentage of shares held by institutional investors.|
+|float_hold_pct|N/A|Percentage of shares held by institutions as a percentage of the float.|
+|num_inst|N/A|The number of institutional holders holding shares.|
+
+The institutional holders data of a given stock:
+
+|name|attribute|description|
+|---|---|---|
+|holder|institutional_holders.Holder|Name of the institutional holder.|
+|shares|institutional_holders.Shares|Number of shares held by the institutional holder.|
+|date_reported|institutional_holders.Date Reported|Date of the latest reported holding by the institutional holder.|
+|pct_out|institutional_holders.% Out|Percentage of the total outstanding shares held by the institutional holder.|
+|value|institutional_holders.Value|Total value of the shares held by the institutional holder.|
+
+The mutual fund holders data of a given stock:
+
+|name|attribute|description|
+|---|---|---|
+|holder|mutualfund_holders.Holder|Name of the mutual fund holder.|
+|shares|mutualfund_holders.Shares|Number of shares held by the mutual fund holder.|
+|date_reported|mutualfund_holders.Date Reported|Date of the latest reported holding by the mutual fund holder.|
+|pct_out|mutualfund_holders.% Out|Percentage of the total outstanding shares held by the mutual fund holder.|
+|value|mutualfund_holders.Value|Total value of the shares held by the mutual fund holder.|
+
+The earnings data of a given stock company:
+
+|name|attribute|description|
+|---|---|---|
+|earnings_date|earnings_dates.Earnings Date|Date and time of the earnings report.|
+|eps_estimate|earnings_dates.EPS Estimate|Estimated earnings per share.|
+|reported_eps|earnings_dates.Reported EPS|Actual reported earnings per share.|
+|surprise_pct|earnings_dates.Surprise(%)|Percentage difference between EPS estimate and reported EPS.|
 
 

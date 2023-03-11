@@ -2,7 +2,7 @@
 
 ![capstone system architecture](https://user-images.githubusercontent.com/14934562/223332431-e86c2c5d-5dc1-405a-b471-e5aa2d5f92df.png)
 
-
+# Reddit
 ### Subreddits - general
 1. r/StockMarket: This subreddit is dedicated to discussions about the stock market, investing, and trading.
 2. r/Investing: This subreddit is focused on investment-related discussions and analysis.
@@ -41,12 +41,14 @@ reference: https://praw.readthedocs.io/en/stable/code_overview/models/submission
 |"url"| submission.url|The URL the submission links to, or the permalink if a selfpost.|
 |'subreddit'| subreddit.display_name|Provides an instance of Subreddit.|
 
-
+# Yahoo finance
 ### Yahoo finance data
 reference: https://pypi.org/project/yfinance/
 
 The historical market data of a given stock:
-
+```
+yfinance.Ticker("SYMBOL").history(period="max") # period="1mo"
+```
 |name|attribute|description|
 |---|---|---|
 |"trade_date"|history.Date|The date of a particular trading day.|
@@ -57,7 +59,9 @@ The historical market data of a given stock:
 |"volume"|history.Volume|The total number of shares traded during the trading day.|
 
 The corporate actions taken by the company of a given stock:
-
+```
+yfinance.Ticker("SYMBOL").actions
+```
 |name|attribute|description|
 |---|---|---|
 |"action_date"|actions.Date|The date on which the corporate action occurred.|
@@ -65,7 +69,9 @@ The corporate actions taken by the company of a given stock:
 |"stock_splits"|actions.Stock Splits|The stock split(s) that occurred on the given date, expressed as a ratio (e.g. "2:1")|
 
 The snapshot of the current state of a given stock:
-
+```
+yfinance.Ticker("SYMBOL").fast_info
+```
 |name|attribute|description|
 |---|---|---|
 |"currency"|fast_info.currency|The currency in which the stock is priced.|
@@ -90,7 +96,9 @@ The snapshot of the current state of a given stock:
 |"year_low"|fast_info.yearLow|The lowest price of the stock over the year.|
 
 The history meta data of a given stock:
-
+```
+yfinance.Ticker("SYMBOL").history_metadata
+```
 |name|attribute|description|
 |---|---|---|
 |currency|history_metadata.currency|The currency in which the stock is priced.|
@@ -123,7 +131,9 @@ The historical share count data of a given stock:
 |share_count|N/A|The number of outstanding shares of the stock at the given date and time.|
 
 The major holders data of a given stock:
-
+```
+yfinance.Ticker("SYMBOL").major_holders
+```
 |name|attribute|description|
 |---|---|---|
 |insider_hold_pct|N/A|Percentage of shares held by all insiders.|
@@ -132,7 +142,9 @@ The major holders data of a given stock:
 |num_inst|N/A|The number of institutional holders holding shares.|
 
 The institutional holders data of a given stock:
-
+```
+yfinance.Ticker("SYMBOL").institutional_holders
+```
 |name|attribute|description|
 |---|---|---|
 |holder|institutional_holders.Holder|Name of the institutional holder.|
@@ -142,7 +154,9 @@ The institutional holders data of a given stock:
 |value|institutional_holders.Value|Total value of the shares held by the institutional holder.|
 
 The mutual fund holders data of a given stock:
-
+```
+yfinance.Ticker("SYMBOL").mutualfund_holders
+```
 |name|attribute|description|
 |---|---|---|
 |holder|mutualfund_holders.Holder|Name of the mutual fund holder.|
@@ -152,7 +166,9 @@ The mutual fund holders data of a given stock:
 |value|mutualfund_holders.Value|Total value of the shares held by the mutual fund holder.|
 
 The earnings data of a given stock company:
-
+```
+yfinance.Ticker("SYMBOL").earnings_dates
+```
 |name|attribute|description|
 |---|---|---|
 |earnings_date|earnings_dates.Earnings Date|Date and time of the earnings report.|
@@ -160,4 +176,17 @@ The earnings data of a given stock company:
 |reported_eps|earnings_dates.Reported EPS|Actual reported earnings per share.|
 |surprise_pct|earnings_dates.Surprise(%)|Percentage difference between EPS estimate and reported EPS.|
 
-
+Related News of this company:
+```
+yfinance.Ticker("SYMBOL").news
+```
+|attribute|example|
+|---|---|
+|uuid | c2aa419c-bdb6-310f-80cf-d6e1fe2c2acd|
+|title|Dow Jones Futures: Will Powell Testimony Threaten Stock Market Rally? Apple, Tesla In Focus|
+|publisher|Investor's Business Daily|
+|link| https://finance.yahoo.com/m/c2aa419c-bdb6-310f-80cf-d6e1fe2c2acd/dow-jones-futures%3A-will.html|
+providerPublishTime| 1678193575|
+|type|STORY|
+|thumbnail|pictures url and size|
+|relatedTickers|['TSLA', '^DJI', 'AYX', 'ANET', 'MSFT']|

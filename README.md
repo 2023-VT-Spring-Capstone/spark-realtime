@@ -4,17 +4,28 @@
 
 # Reddit
 ### Subreddits - general
-1. r/Stocks: This subreddit is a general forum for stock market discussions, news, and analysis.
-2. r/StockMarket: This subreddit is dedicated to discussions about the stock market, investing, and trading.
-3. r/Shortsqueeze: The subreddit dedicated to discussing short squeezes in the stock market.
-4. r/Investing: This subreddit is focused on investment-related discussions and analysis.
-5. r/Daytrading: This subreddit is for discussions about day trading and short-term trading strategies.
-6. r/WallStreetBets: This subreddit gained popularity in recent years due to its focus on high-risk, high-reward trades and investments.
-7. r/PennyStocks: This subreddit is dedicated to discussions about penny stocks, which are stocks that trade for less than $5 per share.
-8. r/RobinHoodPennyStocks: a subreddit focused on discussing penny stocks, which are stocks that trade at a relatively low price per share (usually less than $5) and are often issued by small or micro-cap companies.
-9. r/Robinhood: This subreddit is focused on discussions about the Robinhood trading platform and related topics.
-10. r/Options: This subreddit is focused on options trading and strategies.
-11. r/SecurityAnalysis: This subreddit is dedicated to discussions about security analysis and valuation.
+|name|description|
+|---|---|
+|stocks| This subreddit is a general forum for stock market discussions, news, and analysis.|
+|StockMarket| This subreddit is dedicated to discussions about the stock market, investing, and trading.|
+|Stock_Picks||
+|StocksAndTrading||
+|Shortsqueeze| The subreddit dedicated to discussing short squeezes in the stock market.|
+|Investing| This subreddit is focused on investment-related discussions and analysis.|
+|Daytrading| This subreddit is for discussions about day trading and short-term trading strategies.|
+|WallStreetBets| This subreddit gained popularity in recent years due to its focus on high-risk, high-reward trades and investments.|
+|pennyStocks| This subreddit is dedicated to discussions about penny stocks, which are stocks that trade for less than $5 per share.|
+|Robinhood| This subreddit is focused on discussions about the Robinhood trading platform and related topics.|
+|RobinHoodPennyStocks| a subreddit focused on discussing penny stocks, which are stocks that trade at a relatively low price per share (usually less than $5) and are often issued by small or micro-cap companies.|
+|Options| This subreddit is focused on options trading and strategies.|
+|SecurityAnalysis| This subreddit is dedicated to discussions about security analysis and valuation.|
+|ValueInvesting|
+|CanadianInvestor|
+|economy|
+|finance|
+|InvestmentClub|
+|MemeEconomy|
+|StocksAndBoobs|
 
 ### Subreddits - targeted (WIP)
 |name|ticker symbol|subreddits|

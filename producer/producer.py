@@ -1,12 +1,14 @@
-import praw
+import json
+import threading
 import time
 from datetime import datetime
-from kafka import KafkaProducer
-import threading
-import json
+import praw
+import pytz
 import redis
-import yahoo_finance
+from kafka import KafkaProducer
 
+
+local_timezone = pytz.timezone('America/New_York')
 # Set up Reddit API client
 # FILL IN username, password of yours
 reddit = praw.Reddit(
@@ -76,7 +78,7 @@ print("Listening for new posts:")
 
 # Define function to send post data to Kafka topic
 # ID of post is checked here to prevent duplicate posts sent to Kafka
-def send_to_kafka(topic, post, subreddit_name, ticker):
+def send_to_kafka(topic, post, subreddit_name, ticker, label):
     # Check if post ID has already been sent, so we won't send duplicate posts into kafka
     if not redis_client.get(post.id):
         # Add post ID to Redis with 1 hour expiration
@@ -85,7 +87,7 @@ def send_to_kafka(topic, post, subreddit_name, ticker):
         post_data = {
             "author": post.author,
             "author_flair_text": post.author_flair_text,
-            "created_time": datetime.utcfromtimestamp(post.created_utc).strftime('%Y-%m-%dT %H:%M:%S.%fZ'),
+            "created_time": post.created_utc,
             "id": post.id,
             "is_original": post.is_original_content,
             "is_self": post.is_self,
@@ -97,10 +99,15 @@ def send_to_kafka(topic, post, subreddit_name, ticker):
             "num_comments": post.num_comments,
             "url": post.url,
             "subreddit": subreddit_name,
-            "ticker": ticker
+            "ticker": ticker,
+            "label": label
         }
         if post_data['author'] is not None:
             post_data['author'] = post_data['author'].name
+
+        local_time = datetime.utcfromtimestamp(post_data['created_time']).replace(tzinfo=pytz.utc, microsecond=0).astimezone(local_timezone)
+        post_data['created_time'] = local_time.strftime('%Y-%m-%d %H:%M:%S.%fZ')
+
         producer.send(topic, value=post_data)
 
 
@@ -110,13 +117,13 @@ def fetch_and_send_posts(subreddit_name_list, ticker):
         sub = reddit.subreddit(subreddit_name)
         # Fetch and send top posts
         for post in sub.top(limit=10):
-            send_to_kafka('REDDIT_TOP_LOG', post, subreddit_name, ticker)
+            send_to_kafka('DWD_TOP_LOG', post, subreddit_name, ticker, "top")
         # Fetch and send hot posts
         for post in sub.hot(limit=10):
-            send_to_kafka('REDDIT_HOT_LOG', post, subreddit_name, ticker)
+            send_to_kafka('DWD_HOT_LOG', post, subreddit_name, ticker, "hot")
         # Fetch and send controversial posts
         for post in sub.controversial(limit=10):
-            send_to_kafka('REDDIT_CONTROVERSIAL_LOG', post, subreddit_name, ticker)
+            send_to_kafka('DWD_CONTROVERSIAL_LOG', post, subreddit_name, ticker, "controversial")
 
 
 # Define function to listen to active user count
@@ -134,7 +141,7 @@ def listen_new_posts(subreddit_name_list, ticker):
     for subreddit_name in subreddit_name_list:
         sub = reddit.subreddit(subreddit_name)
         for post in sub.new(limit=10):
-            send_to_kafka('REDDIT_NEW_LOG', post, subreddit_name, ticker)
+            send_to_kafka('DWD_NEW_LOG', post, subreddit_name, ticker, "new")
 
 
 # Update hot/top/controversial posts

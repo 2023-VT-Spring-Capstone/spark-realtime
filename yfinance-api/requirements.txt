@@ -1,0 +1,3 @@
+yfinance==0.2.14
+mysql-connector-python==8.0.32
+schedule==1.1.0

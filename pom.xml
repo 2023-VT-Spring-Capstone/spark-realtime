@@ -11,6 +11,7 @@
     <modules>
         <module>sparkStreaming-realtime</module>
         <module>es-demo</module>
+        <module>capstone-realtime-backend</module>
     </modules>
 
 

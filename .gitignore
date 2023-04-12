@@ -1,1 +1,4 @@
 /.idea/
+.DS_Store
+/yfinance-api/.idea/
+/sparkStreaming-realtime/target/

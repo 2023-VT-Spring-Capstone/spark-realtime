@@ -1,20 +1,16 @@
 import yfinance as yf
 import mysql.connector
+from db_config import db_config
 
 
 def main():
 
     print("Run info.py")
 
-    mydb = mysql.connector.connect(
-        host='localhost',
-        port=3307,
-        user='root',
-        password='root',
-        database='yfinance'
-    )
+    # Connect to MySQL database
+    mydb = mysql.connector.connect(**db_config)
 
-    # 獲取光標
+    # Create a cursor object
     cursor = mydb.cursor()
 
     # Define the SQL query to create the stocks table
@@ -79,6 +75,7 @@ def main():
         values = [info_dict.get(key, None) for key in keys]
         values.insert(0, ticker)
         # 定義INSERT語句
+
         sql = """
             INSERT INTO info
             (symbol, currency, day_high, day_low, exchange, fifty_day_average, last_price, last_volume, market_cap, day_open,
@@ -107,7 +104,6 @@ def main():
                         year_high = VALUES(year_high),
                         year_low = VALUES(year_low)
             """
-
         cursor.execute(sql, values)
 
     # Commit changes to database and close connection

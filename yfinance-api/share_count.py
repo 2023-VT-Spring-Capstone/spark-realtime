@@ -1,5 +1,6 @@
 import yfinance as yf
 import mysql.connector
+from db_config import db_config
 
 
 def main():
@@ -7,13 +8,7 @@ def main():
     print("Run share_count.py")
 
     # Connect to MySQL database
-    mydb = mysql.connector.connect(
-        host="localhost",
-        port=3307,
-        user="root",
-        password="root",
-        database="yfinance"
-    )
+    mydb = mysql.connector.connect(**db_config)
 
     # Create a cursor object
     cursor = mydb.cursor()
@@ -66,7 +61,7 @@ def main():
                 INSERT IGNORE INTO share_count (symbol, record_date, share_count)
                 VALUES (%s, %s, %s)
                 """
-            val = (ticker, index, value)
+            val = (ticker, index.strftime('%Y-%m-%d'), value)
             cursor.execute(sql, val)
 
     # Commit changes to database and close connection

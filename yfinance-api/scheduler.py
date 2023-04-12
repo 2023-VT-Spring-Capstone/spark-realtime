@@ -13,9 +13,17 @@ schedule.every(1).days.do(run_earnings)
 schedule.every(6).hours.do(run_info)
 schedule.every(6).hours.do(run_history)
 schedule.every(1).days.do(run_holders)
-schedule.every(3).hours.do(run_news)
+schedule.every(2).hours.do(run_news)
 schedule.every(1).days.do(run_share_count)
-schedule.every(1).days.do(run_actions)
+# schedule.every(1).days.do(run_actions) // doesn't work Apr 12 2023
+
+# schedule.every(10).seconds.do(run_earnings)
+# schedule.every(10).seconds.do(run_info)
+# schedule.every(10).seconds.do(run_history)
+# schedule.every(10).seconds.do(run_holders)
+# schedule.every(10).seconds.do(run_news)
+# schedule.every(10).seconds.do(run_share_count)
+# schedule.every(10).seconds.do(run_actions)
 
 while True:
     try:

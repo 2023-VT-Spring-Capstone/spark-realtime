@@ -1,5 +1,6 @@
 import yfinance as yf
 import mysql.connector
+from db_config import db_config
 
 
 def main():
@@ -7,13 +8,7 @@ def main():
     print("Run holders.py")
 
     # Connect to MySQL database
-    mydb = mysql.connector.connect(
-        host="localhost",
-        port=3307,
-        user="root",
-        password="root",
-        database="yfinance"
-    )
+    mydb = mysql.connector.connect(**db_config)
 
     # Create a cursor object
     cursor = mydb.cursor()
@@ -38,7 +33,7 @@ def main():
         CREATE TABLE IF NOT EXISTS inst_holders (
             id INT AUTO_INCREMENT PRIMARY KEY,
             symbol VARCHAR(10) NOT NULL,
-            holders VARCHAR(60) NOT NULL,
+            holders VARCHAR(100) NOT NULL,
             shares BIGINT NOT NULL,
             date_reported DATE NOT NULL,
             pct_out DOUBLE(8,4) NOT NULL,
@@ -55,7 +50,7 @@ def main():
         CREATE TABLE IF NOT EXISTS mtlfd_holders (
             id INT AUTO_INCREMENT PRIMARY KEY,
             symbol VARCHAR(10) NOT NULL,
-            holders VARCHAR(60) NOT NULL,
+            holders VARCHAR(100) NOT NULL,
             shares BIGINT NOT NULL,
             date_reported DATE NOT NULL,
             pct_out DOUBLE(8,4) NOT NULL,
@@ -94,6 +89,7 @@ def main():
             VALUES (%s, %s, %s, %s, %s)
             """
         cursor.execute(sql, values)
+    mydb.commit()
 
     for ticker in tickers:
         inst_holders = data[ticker].institutional_holders
@@ -110,8 +106,9 @@ def main():
                 """
             # shares_val should be the only one that changes over time.
             # shares_val = number of shares as of date reported x current price
-            val = (ticker, row[0], row[1], row[2], row[3], row[4])
+            val = (ticker, row[0], row[1], row[2].strftime('%Y-%m-%d'), row[3], row[4])
             cursor.execute(sql, val)
+    mydb.commit()
 
     for ticker in tickers:
         mtlfd_holders = data[ticker].mutualfund_holders
@@ -126,7 +123,7 @@ def main():
                         pct_out = VALUES(pct_out), 
                         shares_val = VALUES(shares_val)
                 """
-            val = (ticker, row[0], row[1], row[2], row[3], row[4])
+            val = (ticker, row[0], row[1], row[2].strftime('%Y-%m-%d'), row[3], row[4])
             cursor.execute(sql, val)
 
     # Commit changes to database and close connection

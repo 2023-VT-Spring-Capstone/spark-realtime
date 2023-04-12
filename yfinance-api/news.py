@@ -2,6 +2,7 @@ import yfinance as yf
 import mysql.connector
 import json
 import datetime
+from db_config import db_config
 
 
 def main():
@@ -9,13 +10,7 @@ def main():
     print("Run news.py")
 
     # Connect to MySQL database
-    mydb = mysql.connector.connect(
-        host="localhost",
-        port=3307,
-        user="root",
-        password="root",
-        database="yfinance"
-    )
+    mydb = mysql.connector.connect(**db_config)
 
     # Create a cursor object
     cursor = mydb.cursor()

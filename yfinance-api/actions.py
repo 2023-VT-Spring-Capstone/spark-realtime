@@ -1,5 +1,6 @@
 import yfinance as yf
 import mysql.connector
+from db_config import db_config
 
 
 def main():
@@ -7,13 +8,7 @@ def main():
     print("Run actions.py")
 
     # Connect to MySQL database
-    mydb = mysql.connector.connect(
-        host="localhost",
-        port=3307,
-        user="root",
-        password="root",
-        database="yfinance"
-    )
+    mydb = mysql.connector.connect(**db_config)
 
     # Create a cursor object
     cursor = mydb.cursor()
@@ -42,14 +37,14 @@ def main():
 
     for ticker in tickers:
         actions = yf.Ticker(ticker).actions
-        # print(actions)
-        # print(type(actions))
+        # print("actions = ", actions)
+        # print("type(actions) = ", type(actions))
         for index, row in actions.iterrows():
             sql = """
                 INSERT IGNORE INTO actions (symbol, action_date, dividends, stock_splits)
                 VALUES (%s, %s, %s, %s)
                 """
-            val = (ticker, index, row['Dividends'], row['Stock Splits'])
+            val = (ticker, index.strftime('%Y-%m-%d'), row['Dividends'], row['Stock Splits'])
             cursor.execute(sql, val)
 
     # Commit changes to database and close connection
@@ -57,7 +52,7 @@ def main():
     cursor.close()
     mydb.close()
 
-    print("Finished running earnings.py")
+    print("Finished running actions.py")
 
 
 if __name__ == '__main__':

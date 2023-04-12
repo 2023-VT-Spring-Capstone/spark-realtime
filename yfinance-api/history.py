@@ -1,5 +1,6 @@
 import yfinance as yf
 import mysql.connector
+from db_config import db_config
 
 
 def main():
@@ -7,13 +8,7 @@ def main():
     print("Run history.py")
 
     # Connect to MySQL database
-    mydb = mysql.connector.connect(
-        host="localhost",
-        port=3307,
-        user="root",
-        password="root",
-        database="yfinance"
-    )
+    mydb = mysql.connector.connect(**db_config)
 
     # Create a cursor object
     cursor = mydb.cursor()
@@ -92,8 +87,8 @@ def main():
     cursor.execute("SELECT param_value FROM params WHERE api_name='{}' AND param_name='interval'".format(_API_NAME))
     interval = cursor.fetchone()[0]
 
-    print("Period:", period)
-    print("Interval:", interval)
+    # print("Period:", period)
+    # print("Interval:", interval)
 
     # Stocks to fetch
     sql = "SELECT name FROM ticker ORDER BY id"
@@ -114,7 +109,8 @@ def main():
         for index, row in hist_price.iterrows():
             # print(index.strftime('%Y-%m-%d %H:%M:%S'))
             sql = """
-                    INSERT INTO hist_price (symbol, datetime, open_price, high_price, low_price, close_price, volume, time_range, data_granularity)
+                    INSERT INTO hist_price (symbol, datetime, open_price, high_price, low_price, close_price, volume, 
+                    time_range, data_granularity)
                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
                     ON DUPLICATE KEY UPDATE 
                         open_price = VALUES(open_price), 
@@ -125,25 +121,35 @@ def main():
                 """
 
             val = (
-                ticker, index.strftime('%Y-%m-%d %H:%M:%S'), row['Open'], row['High'], row['Low'], row['Close'], row['Volume'],
-                period, interval
+                ticker, index.strftime('%Y-%m-%d %H:%M:%S'), float(row['Open']), float(row['High']), float(row['Low']),
+                float(row['Close']), int(row['Volume']), period, interval
             )
 
             cursor.execute(sql, val)
+        mydb.commit()
 
         hist_meta_keys = ['currency', 'symbol', 'exchangeName', 'instrumentType', 'firstTradeDate', 'regularMarketTime',
                           'gmtoffset', 'timezone', 'exchangeTimezoneName', 'regularMarketPrice', 'chartPreviousClose',
                           'priceHint', 'currentTradingPeriod', 'dataGranularity', 'range', 'validRanges']
         # print(hist_meta)
-        preStart = hist_meta['currentTradingPeriod']['pre']['start']
-        preEnd = hist_meta['currentTradingPeriod']['pre']['end']
-        regStart = hist_meta['currentTradingPeriod']['regular']['start']
-        regEnd = hist_meta['currentTradingPeriod']['regular']['end']
-        postStart = hist_meta['currentTradingPeriod']['post']['start']
-        postEnd = hist_meta['currentTradingPeriod']['post']['end']
+
+        preStart = hist_meta['currentTradingPeriod']['pre']['start'].strftime('%Y-%m-%d')
+        preEnd = hist_meta['currentTradingPeriod']['pre']['end'].strftime('%Y-%m-%d')
+        regStart = hist_meta['currentTradingPeriod']['regular']['start'].strftime('%Y-%m-%d')
+        regEnd = hist_meta['currentTradingPeriod']['regular']['end'].strftime('%Y-%m-%d')
+        postStart = hist_meta['currentTradingPeriod']['post']['start'].strftime('%Y-%m-%d')
+        postEnd = hist_meta['currentTradingPeriod']['post']['end'].strftime('%Y-%m-%d')
         hist_meta_keys.remove('currentTradingPeriod')
         hist_meta_keys.remove('validRanges')
-        values = [hist_meta.get(key, None) for key in hist_meta_keys]
+        # values = [hist_meta.get(key, None) for key in hist_meta_keys]
+        values = []
+        for key in hist_meta_keys:
+            value = None
+            if key == 'regularMarketTime' or key == 'firstTradeDate':
+                value = hist_meta.get(key, None).strftime('%Y-%m-%d')
+            else:
+                value = hist_meta.get(key, None)
+            values.append(value)
         values.append(preStart)
         values.append(preEnd)
         values.append(regStart)
@@ -185,8 +191,8 @@ def main():
             '''
 
         cursor.execute(sql, values)
-    # Commit changes to database and close connection
-    mydb.commit()
+        mydb.commit()
+
     cursor.close()
     mydb.close()
 

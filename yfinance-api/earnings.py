@@ -1,20 +1,15 @@
 import yfinance as yf
 import mysql.connector
 import pandas as pd
+import decimal
+from db_config import db_config
 
 
 def main():
 
     print("Run earnings.py")
-
     # Connect to MySQL database
-    mydb = mysql.connector.connect(
-        host="localhost",
-        port=3307,
-        user="root",
-        password="root",
-        database="yfinance"
-    )
+    mydb = mysql.connector.connect(**db_config)
 
     # Create a cursor object
     cursor = mydb.cursor()
@@ -56,7 +51,8 @@ def main():
                         reported_eps = VALUES(reported_eps), 
                         surprise_pct = VALUES(surprise_pct)
                 """
-            val = (ticker, index, row['EPS Estimate'], row['Reported EPS'], row['Surprise(%)'])
+            val = (ticker, index.strftime('%Y-%m-%d %H:%M:%S'), float(row['EPS Estimate']), float(row['Reported EPS']),
+                   float(row['Surprise(%)']))
             val = tuple(x if not pd.isna(x) else None for x in val)
             cursor.execute(sql, val)
 

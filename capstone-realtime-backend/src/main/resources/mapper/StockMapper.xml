@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.capstone.realtimebackend.mapper.StockMapper">
+    <select id="findInfoBySymbol" resultType="com.capstone.realtimebackend.bean.Info">
+        SELECT * FROM info WHERE symbol = #{symbol}
+    </select>
+    <select id="findHistPricesBySymbol" resultType="com.capstone.realtimebackend.bean.HistPrice">
+        SELECT * FROM hist_price WHERE symbol = #{symbol} AND time_range = '1y' AND data_granularity = '1d' ORDER BY datetime
+    </select>
+    <select id="findHistMetaBySymbol" resultType="com.capstone.realtimebackend.bean.HistMeta">
+        SELECT * FROM hist_meta WHERE symbol = #{symbol} AND time_range = '1y' AND data_granularity = '1d'
+    </select>
+    <select id="findMajorHoldersBySymbol" resultType="com.capstone.realtimebackend.bean.MajorHolders">
+        SELECT * FROM major_holders WHERE symbol = #{symbol} ORDER BY created_at DESC LIMIT 1
+    </select>
+    <select id="findInstHolderBySymbol" resultType="com.capstone.realtimebackend.bean.InstHolder">
+        SELECT * FROM inst_holders WHERE symbol = #{symbol} ORDER BY date_reported DESC, shares DESC LIMIT 10
+    </select>
+    <select id="findMtlfdHolderBySymbol" resultType="com.capstone.realtimebackend.bean.MtlfdHolder">
+        SELECT mh.*
+        FROM (
+                 SELECT holders, MAX(date_reported) AS max_date
+                 FROM mtlfd_holders
+                 WHERE symbol = #{symbol}
+                   AND date_reported >= DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+                 GROUP BY holders
+                 ORDER BY max_date DESC
+                     LIMIT 13
+             ) AS latest
+                 INNER JOIN mtlfd_holders mh
+                    ON latest.holders = mh.holders AND latest.max_date = mh.date_reported
+        ORDER BY mh.shares DESC
+    </select>
+    <select id="findShareCountBySymbol" resultType="com.capstone.realtimebackend.bean.ShareCount">
+        SELECT * FROM share_count WHERE symbol = #{symbol} ORDER BY record_date DESC LIMIT 1;
+    </select>
+    <select id="findEarningsBySymbol" resultType="com.capstone.realtimebackend.bean.Earnings">
+        SELECT * FROM earnings
+        WHERE symbol = #{symbol} AND earnings_date BETWEEN DATE_SUB(NOW(), INTERVAL 1 YEAR) AND NOW()
+        ORDER BY earnings_date DESC;
+    </select>
+    <select id="findNewsBySymbol" resultType="com.capstone.realtimebackend.bean.News">
+        SELECT * FROM news WHERE symbol = #{symbol} ORDER BY publish_time DESC LIMIT 5;
+    </select>
+    <select id="findActionsBySymbol" resultType="com.capstone.realtimebackend.bean.Actions">
+        SELECT * FROM actions WHERE symbol = #{symbol} AND action_date >= DATE_SUB(CURDATE(), INTERVAL 5 YEAR) ORDER BY action_date DESC;
+    </select>
+</mapper>

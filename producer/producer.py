@@ -100,7 +100,8 @@ def send_to_kafka(topic, post, subreddit_name, ticker, label):
             "url": post.url,
             "subreddit": subreddit_name,
             "ticker": ticker,
-            "label": label
+            "label": label,
+            "sentiment": None
         }
         if post_data['author'] is not None:
             post_data['author'] = post_data['author'].name
@@ -112,18 +113,19 @@ def send_to_kafka(topic, post, subreddit_name, ticker, label):
 
 
 # Define function to fetch and send top/hot/controversial posts
+# DWD_TOP_LOG, DWD_HOT_LOG, DWD_CONTROVERSIAL_LOG
 def fetch_and_send_posts(subreddit_name_list, ticker):
     for subreddit_name in subreddit_name_list:
         sub = reddit.subreddit(subreddit_name)
         # Fetch and send top posts
         for post in sub.top(limit=10):
-            send_to_kafka('DWD_TOP_LOG', post, subreddit_name, ticker, "top")
+            send_to_kafka('DWD_BASE_LOG', post, subreddit_name, ticker, "top")
         # Fetch and send hot posts
         for post in sub.hot(limit=10):
-            send_to_kafka('DWD_HOT_LOG', post, subreddit_name, ticker, "hot")
+            send_to_kafka('DWD_BASE_LOG', post, subreddit_name, ticker, "hot")
         # Fetch and send controversial posts
         for post in sub.controversial(limit=10):
-            send_to_kafka('DWD_CONTROVERSIAL_LOG', post, subreddit_name, ticker, "controversial")
+            send_to_kafka('DWD_BASE_LOG', post, subreddit_name, ticker, "controversial")
 
 
 # Define function to listen to active user count
@@ -140,8 +142,8 @@ def listen_active_user_count(subreddit_name_list, ticker):
 def listen_new_posts(subreddit_name_list, ticker):
     for subreddit_name in subreddit_name_list:
         sub = reddit.subreddit(subreddit_name)
-        for post in sub.new(limit=10):
-            send_to_kafka('DWD_NEW_LOG', post, subreddit_name, ticker, "new")
+        for post in sub.new(limit=50):
+            send_to_kafka('DWD_BASE_LOG', post, subreddit_name, ticker, "new")
 
 
 # Update hot/top/controversial posts
@@ -182,7 +184,7 @@ def new_active_handler():
 
 def main():
     # might need to use different threads in the future. Now new_active_handler is blocked by htc_type_handler
-    htc_type_handler()
+    # htc_type_handler()
     # TODO: execute yahoo_finance here
     # yahoo_finance.execute()
     while True:

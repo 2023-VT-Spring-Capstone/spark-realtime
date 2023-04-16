@@ -50,7 +50,7 @@ object OdsBaseDbApp {
         jSONObject
       }
     )
-//    jsonObjDStream.print(100)
+    //    jsonObjDStream.print(100)
 
     //5.2 分流
 
@@ -121,10 +121,10 @@ object OdsBaseDbApp {
                   val dwdTopicName : String = s"DWD_${tableName.toUpperCase}_${opValue}"
                   MyKafkaUtils.send(dwdTopicName ,  data )
 
-//                  // Simulate data delay
-//                  if(tableName.equals("fast_info")){
-//                    Thread.sleep(200)
-//                  }
+                  //                  // Simulate data delay
+                  //                  if(tableName.equals("fast_info")){
+                  //                    Thread.sleep(200)
+                  //                  }
                 }
 
                 if(dimTablesBC.value.contains(tableName)){

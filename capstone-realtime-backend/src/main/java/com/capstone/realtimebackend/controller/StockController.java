@@ -20,6 +20,7 @@ public class StockController {
      * http://localhost:8080/stock/APPL/info
      */
 
+    @CrossOrigin(origins = "*")
     @GetMapping("stock/{symbol}/info")
     public Map<String, Object> stock_info(@PathVariable("symbol") String symbol) {
 //        return stockService.getStockInfo(symbol);
@@ -32,6 +33,7 @@ public class StockController {
         return stockService.getWebStockInfo(symbol);
     }
 
+    @CrossOrigin(origins = "*")
     @GetMapping("stock/{symbol}/chart")
     public HistPriceDTO stock_chart(@PathVariable("symbol") String symbol) {
         return stockService.getStockHistPrices(symbol);

@@ -31,6 +31,7 @@
              ) AS latest
                  INNER JOIN mtlfd_holders mh
                     ON latest.holders = mh.holders AND latest.max_date = mh.date_reported
+        WHERE symbol = #{symbol}
         ORDER BY mh.shares DESC
     </select>
     <select id="findShareCountBySymbol" resultType="com.capstone.realtimebackend.bean.ShareCount">
@@ -42,7 +43,7 @@
         ORDER BY earnings_date DESC;
     </select>
     <select id="findNewsBySymbol" resultType="com.capstone.realtimebackend.bean.News">
-        SELECT * FROM news WHERE symbol = #{symbol} ORDER BY publish_time DESC LIMIT 5;
+        SELECT * FROM news WHERE symbol = #{symbol} ORDER BY publish_time DESC LIMIT 10;
     </select>
     <select id="findActionsBySymbol" resultType="com.capstone.realtimebackend.bean.Actions">
         SELECT * FROM actions WHERE symbol = #{symbol} AND action_date >= DATE_SUB(CURDATE(), INTERVAL 5 YEAR) ORDER BY action_date DESC;

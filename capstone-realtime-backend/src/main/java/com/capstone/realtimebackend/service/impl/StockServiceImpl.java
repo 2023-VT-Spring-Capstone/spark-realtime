@@ -15,6 +15,44 @@ import java.util.stream.Collectors;
 @Service
 public class StockServiceImpl implements StockService {
 
+    public Map<String, Object> getWebStockInfo(String symbol) {
+        Map<String, Object> webInfo = new HashMap<>();
+        HistMeta histMeta = stockMapper.findHistMetaBySymbol(symbol);
+        Info info = stockMapper.findInfoBySymbol(symbol);
+
+        List<Earnings> earningsList = stockMapper.findEarningsBySymbol(symbol);
+        webInfo.put("fiftyDayAver", info == null ? null : info.getFiftyDayAverage());
+        webInfo.put("tenDayAverVol", info == null ? null : info.getTenDayAverVol());
+        webInfo.put("threeMonthAverVol", info == null ? null : info.getThreeMonthAverVol());
+        webInfo.put("twoHundredDayAver", info == null ? null : info.getTwoHundredDayAver());
+        webInfo.put("yearHigh", info == null ? null : info.getYearHigh());
+        webInfo.put("yearLow", info == null ? null : info.getYearLow());
+        webInfo.put("yearChange", info == null ? null : info.getYearChange());
+        webInfo.put("earningsDate", earningsList.size() == 0 ? null : earningsList.get(0).getEarningsDate());
+        webInfo.put("reportedEps", earningsList.size() == 0 ? null : earningsList.get(0).getReportedEps());
+        webInfo.put("surprisePct", earningsList.size() == 0 ? null : earningsList.get(0).getSurprisePct());
+        webInfo.put("exchangeName", histMeta == null ? null : histMeta.getExchangeName());
+        webInfo.put("currency", histMeta == null ? null : histMeta.getCurrency());
+        webInfo.put("instrumentType", histMeta == null ? null : histMeta.getInstrumentType());
+        webInfo.put("currRegMarketStart", histMeta == null ? null : histMeta.getCurrRegMarketStart());
+        webInfo.put("currRegMarketEnd", histMeta == null ? null : histMeta.getCurrRegMarketEnd());
+        return webInfo;
+    }
+
+    public StockAllDTO getWebStockAll(String symbol) {
+        StockAllDTO stockAllDTO = new StockAllDTO();
+        stockAllDTO.setInfo(stockMapper.findInfoBySymbol(symbol));
+        stockAllDTO.setHistPrice(getStockHistPrices(symbol));
+        stockAllDTO.setHistMeta(stockMapper.findHistMetaBySymbol(symbol));
+        stockAllDTO.setEarningsList(stockMapper.findEarningsBySymbol(symbol));
+        stockAllDTO.setMajorHolders(stockMapper.findMajorHoldersBySymbol(symbol));
+        stockAllDTO.setInstHolders(stockMapper.findInstHolderBySymbol(symbol));
+        stockAllDTO.setMtlfdHolders(stockMapper.findMtlfdHolderBySymbol(symbol));
+        stockAllDTO.setShareCount(stockMapper.findShareCountBySymbol(symbol));
+        stockAllDTO.setNewsList(stockMapper.findNewsBySymbol(symbol));
+        return stockAllDTO;
+    }
+
     @Autowired(required = false)
     private StockMapper stockMapper;
     public Info getStockInfo(String symbol) {
@@ -66,34 +104,11 @@ public class StockServiceImpl implements StockService {
         return newsList;
     }
 
-    public List<Actions> getStockActions(String symbol) {
-        List<Actions> actionsList = stockMapper.findActionsBySymbol(symbol);
-        return actionsList;
-    }
-
-    public Map<String, Object> getWebStockInfo(String symbol) {
-        Map<String, Object> webInfo = new HashMap<>();
-        HistMeta histMeta = stockMapper.findHistMetaBySymbol(symbol);
-        Info info = stockMapper.findInfoBySymbol(symbol);
-
-        List<Earnings> earningsList = stockMapper.findEarningsBySymbol(symbol);
-        webInfo.put("fiftyDayAver", info == null ? null : info.getFiftyDayAverage());
-        webInfo.put("tenDayAverVol", info == null ? null : info.getTenDayAverVol());
-        webInfo.put("threeMonthAverVol", info == null ? null : info.getThreeMonthAverVol());
-        webInfo.put("twoHundredDayAver", info == null ? null : info.getTwoHundredDayAver());
-        webInfo.put("yearHigh", info == null ? null : info.getYearHigh());
-        webInfo.put("yearLow", info == null ? null : info.getYearLow());
-        webInfo.put("yearChange", info == null ? null : info.getYearChange());
-        webInfo.put("earningsDate", earningsList.size() == 0 ? null : earningsList.get(0).getEarningsDate());
-        webInfo.put("reportedEps", earningsList.size() == 0 ? null : earningsList.get(0).getReportedEps());
-        webInfo.put("surprisePct", earningsList.size() == 0 ? null : earningsList.get(0).getSurprisePct());
-        webInfo.put("exchangeName", histMeta == null ? null : histMeta.getExchangeName());
-        webInfo.put("currency", histMeta == null ? null : histMeta.getCurrency());
-        webInfo.put("instrumentType", histMeta == null ? null : histMeta.getInstrumentType());
-        webInfo.put("currRegMarketStart", histMeta == null ? null : histMeta.getCurrRegMarketStart());
-        webInfo.put("currRegMarketEnd", histMeta == null ? null : histMeta.getCurrRegMarketEnd());
-        return webInfo;
-    }
+// yfinance API doesn't work as of now
+//    public List<Actions> getStockActions(String symbol) {
+//        List<Actions> actionsList = stockMapper.findActionsBySymbol(symbol);
+//        return actionsList;
+//    }
 
     @PostConstruct
     public void init() {

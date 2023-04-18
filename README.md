@@ -2,22 +2,37 @@
 
 ![capstone system architecture](https://user-images.githubusercontent.com/14934562/223332431-e86c2c5d-5dc1-405a-b471-e5aa2d5f92df.png)
 
-
+# Reddit
 ### Subreddits - general
-1. r/StockMarket: This subreddit is dedicated to discussions about the stock market, investing, and trading.
-2. r/Investing: This subreddit is focused on investment-related discussions and analysis.
-3. r/Daytrading: This subreddit is for discussions about day trading and short-term trading strategies.
-4. r/WallStreetBets: This subreddit gained popularity in recent years due to its focus on high-risk, high-reward trades and investments.
-5. r/Stocks: This subreddit is a general forum for stock market discussions, news, and analysis.
-6. r/Options: This subreddit is focused on options trading and strategies.
-7. r/PennyStocks: This subreddit is dedicated to discussions about penny stocks, which are stocks that trade for less than $5 per share.
-8. r/Robinhood: This subreddit is focused on discussions about the Robinhood trading platform and related topics.
-9. r/SecurityAnalysis: This subreddit is dedicated to discussions about security analysis and valuation.
+|name|description|
+|---|---|
+|stocks| This subreddit is a general forum for stock market discussions, news, and analysis.|
+|StockMarket| This subreddit is dedicated to discussions about the stock market, investing, and trading.|
+|Stock_Picks||
+|StocksAndTrading||
+|Shortsqueeze| The subreddit dedicated to discussing short squeezes in the stock market.|
+|Investing| This subreddit is focused on investment-related discussions and analysis.|
+|Daytrading| This subreddit is for discussions about day trading and short-term trading strategies.|
+|WallStreetBets| This subreddit gained popularity in recent years due to its focus on high-risk, high-reward trades and investments.|
+|pennyStocks| This subreddit is dedicated to discussions about penny stocks, which are stocks that trade for less than $5 per share.|
+|Robinhood| This subreddit is focused on discussions about the Robinhood trading platform and related topics.|
+|RobinHoodPennyStocks| a subreddit focused on discussing penny stocks, which are stocks that trade at a relatively low price per share (usually less than $5) and are often issued by small or micro-cap companies.|
+|Options| This subreddit is focused on options trading and strategies.|
+|SecurityAnalysis| This subreddit is dedicated to discussions about security analysis and valuation.|
+|ValueInvesting|
+|CanadianInvestor|
+|economy|
+|finance|
+|InvestmentClub|
+|MemeEconomy|
+|StocksAndBoobs|
 
 ### Subreddits - targeted (WIP)
 |name|ticker symbol|subreddits|
 |---|---|---|
-|AMC|AMC|"amc", "amcstock", "AMCSTOCKS"|
+|AMC Entertainment|AMC|"amc", "amcstock", "AMCSTOCKS"|
+|BlackBerry Ltd.|BB|"BB_stock", "BlackBerryStock", "CanadianInvestor"|
+|Bed Bath & Beyond|BBBY|"BBBY", "bbby_remastered"|
 |GameStop|GME|"GME", "GMEJungle", "gme_meltdown", "gmeamcstonks", "gme_capitalists"|
 |Tesla|TSLA|"Tesla", "teslainvestorsclub", "RealTesla", "teslamotors", "SpaceX", "elonmusk", "electricvehicles", "investing", "stocks", "wallstreetbets"|
 
@@ -41,12 +56,14 @@ reference: https://praw.readthedocs.io/en/stable/code_overview/models/submission
 |"url"| submission.url|The URL the submission links to, or the permalink if a selfpost.|
 |'subreddit'| subreddit.display_name|Provides an instance of Subreddit.|
 
-
+# Yahoo finance
 ### Yahoo finance data
 reference: https://pypi.org/project/yfinance/
 
 The historical market data of a given stock:
-
+```
+yfinance.Ticker("SYMBOL").history(period="max") # period="1mo"
+```
 |name|attribute|description|
 |---|---|---|
 |"trade_date"|history.Date|The date of a particular trading day.|
@@ -57,7 +74,9 @@ The historical market data of a given stock:
 |"volume"|history.Volume|The total number of shares traded during the trading day.|
 
 The corporate actions taken by the company of a given stock:
-
+```
+yfinance.Ticker("SYMBOL").actions
+```
 |name|attribute|description|
 |---|---|---|
 |"action_date"|actions.Date|The date on which the corporate action occurred.|
@@ -65,7 +84,9 @@ The corporate actions taken by the company of a given stock:
 |"stock_splits"|actions.Stock Splits|The stock split(s) that occurred on the given date, expressed as a ratio (e.g. "2:1")|
 
 The snapshot of the current state of a given stock:
-
+```
+yfinance.Ticker("SYMBOL").fast_info
+```
 |name|attribute|description|
 |---|---|---|
 |"currency"|fast_info.currency|The currency in which the stock is priced.|
@@ -90,7 +111,9 @@ The snapshot of the current state of a given stock:
 |"year_low"|fast_info.yearLow|The lowest price of the stock over the year.|
 
 The history meta data of a given stock:
-
+```
+yfinance.Ticker("SYMBOL").history_metadata
+```
 |name|attribute|description|
 |---|---|---|
 |currency|history_metadata.currency|The currency in which the stock is priced.|
@@ -116,14 +139,18 @@ The history meta data of a given stock:
 |valid_ranges|history_metadata.validRanges|A list of valid time ranges for the historical data for the stock.|
 
 The historical share count data of a given stock:
-
+```
+yfinance.Ticker("SYMBOL").get_shares_full(start="2022-01-01", end=None)
+```
 |name|attribute|description|
 |---|---|---|
 |date|N/A|The date and time.|
 |share_count|N/A|The number of outstanding shares of the stock at the given date and time.|
 
 The major holders data of a given stock:
-
+```
+yfinance.Ticker("SYMBOL").major_holders
+```
 |name|attribute|description|
 |---|---|---|
 |insider_hold_pct|N/A|Percentage of shares held by all insiders.|
@@ -132,7 +159,9 @@ The major holders data of a given stock:
 |num_inst|N/A|The number of institutional holders holding shares.|
 
 The institutional holders data of a given stock:
-
+```
+yfinance.Ticker("SYMBOL").institutional_holders
+```
 |name|attribute|description|
 |---|---|---|
 |holder|institutional_holders.Holder|Name of the institutional holder.|
@@ -142,7 +171,9 @@ The institutional holders data of a given stock:
 |value|institutional_holders.Value|Total value of the shares held by the institutional holder.|
 
 The mutual fund holders data of a given stock:
-
+```
+yfinance.Ticker("SYMBOL").mutualfund_holders
+```
 |name|attribute|description|
 |---|---|---|
 |holder|mutualfund_holders.Holder|Name of the mutual fund holder.|
@@ -152,7 +183,9 @@ The mutual fund holders data of a given stock:
 |value|mutualfund_holders.Value|Total value of the shares held by the mutual fund holder.|
 
 The earnings data of a given stock company:
-
+```
+yfinance.Ticker("SYMBOL").earnings_dates
+```
 |name|attribute|description|
 |---|---|---|
 |earnings_date|earnings_dates.Earnings Date|Date and time of the earnings report.|
@@ -160,4 +193,17 @@ The earnings data of a given stock company:
 |reported_eps|earnings_dates.Reported EPS|Actual reported earnings per share.|
 |surprise_pct|earnings_dates.Surprise(%)|Percentage difference between EPS estimate and reported EPS.|
 
-
+Related News of this company:
+```
+yfinance.Ticker("SYMBOL").news
+```
+|attribute|example|
+|---|---|
+|uuid | c2aa419c-bdb6-310f-80cf-d6e1fe2c2acd|
+|title|Dow Jones Futures: Will Powell Testimony Threaten Stock Market Rally? Apple, Tesla In Focus|
+|publisher|Investor's Business Daily|
+|link| https://finance.yahoo.com/m/c2aa419c-bdb6-310f-80cf-d6e1fe2c2acd/dow-jones-futures%3A-will.html|
+providerPublishTime| 1678193575|
+|type|STORY|
+|thumbnail|pictures url and size|
+|relatedTickers|['TSLA', '^DJI', 'AYX', 'ANET', 'MSFT']|

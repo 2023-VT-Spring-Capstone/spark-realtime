@@ -9,13 +9,13 @@ case class PageLog(
                     model:String,
                     operate_system:String,
                     version_code:String,
-                    brand : String ,
-                    page_id:String ,
+                    brand : String,
+                    page_id:String,
                     last_page_id:String,
                     page_item:String,
                     page_item_type:String,
                     during_time:Long,
-                    sourceType : String ,
+                    sourceType : String,
                     ts:Long
 
                   ) {

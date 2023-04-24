@@ -46,7 +46,7 @@ public class PublisherMapperImpl implements PublisherMapper {
         //明细字段
         searchSourceBuilder.fetchSource(new String[]{
                 "created_time", "date", "id", "is_origin", "is_self", "label", "num_comments", "body",
-                "permalink","score","sentiment","subreddit","ticker","title", "upvote_ratio", "url"}, null );
+                "permalink","score","bearish", "neutral", "bullish", "sentiment","subreddit","ticker","title", "upvote_ratio", "url"}, null );
 
         // title + body
         MatchQueryBuilder titleQueryBuilder = QueryBuilders.matchQuery("title", keyWord).operator(Operator.OR);

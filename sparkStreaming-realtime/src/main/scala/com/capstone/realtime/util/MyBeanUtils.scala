@@ -12,7 +12,7 @@ object MyBeanUtils {
 
   def main(args: Array[String]): Unit = {
     val postLog: PostLog =
-      PostLog("Roy", null, null, null, null, null, null, null, null, 0L, 0F, 12345, null, null, null, null, null)
+      PostLog("Roy", null, null, null, null, null, null, null, null, 0L, 0F, 12345, null, null, null, null, 0F, 0F, 0F, null)
     val pageInfo: PostInfo = new PostInfo()
     println("before copy: " + pageInfo)
     copyProperties(postLog, pageInfo)

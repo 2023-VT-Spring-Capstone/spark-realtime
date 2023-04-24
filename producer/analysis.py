@@ -145,7 +145,7 @@ def sentiment_analysis(post):
             "bullish": score_pos,
             "neutral": score_neu,
             "bearish": score_neg,
-            "sentiment_labal": score_compound
+            "sentiment": score_compound
         }
 
         return post_data

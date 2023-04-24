@@ -1,7 +1,9 @@
 kafka-python
 praw~=7.7.0
 flask~=2.2.3
-Faker~=17.6.0
 yfinance~=0.2.12
 mysql-connector-python~=8.0.32
 redis~=4.5.1
+textblob~=0.17.1
+pytz~=2022.7.1
+nltk~=3.8.1

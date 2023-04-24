@@ -13,6 +13,7 @@ public interface StockService {
     public ShareCount getStockShareCount(String symbol);
     public List<Earnings> getStockEarnings(String symbol);
     public List<News> getStockNews(String symbol);
-    public List<Actions> getStockActions(String symbol);
+//    public List<Actions> getStockActions(String symbol); // yfinance API doesn't work as of now
     public Map<String, Object> getWebStockInfo(String symbol);
+    public StockAllDTO getWebStockAll(String symbol);
 }

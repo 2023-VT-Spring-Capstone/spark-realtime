@@ -11,12 +11,6 @@ import org.springframework.web.bind.annotation.*;
 public class PublisherController {
     @Autowired
     PublisherService publisherService;
-    @CrossOrigin(origins = "*")
-    @GetMapping("stock/{td}")
-    public List<Map<String, Object>> doPostRealtime(@PathVariable("td") String td) {
-        List<Map<String, Object>> postResults = publisherService.doPostRealtime(td);
-        return postResults;
-    }
 
     //http://localhost/detailByItem?date=2023-04-15&keyWord=bank&pageNo=1&pageSize=20
     @CrossOrigin(origins = "*")

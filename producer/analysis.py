@@ -1,6 +1,8 @@
 from kafka import KafkaConsumer, KafkaProducer
 from textblob import TextBlob
 import json
+import nltk
+nltk.download('vader_lexicon')
 
 bootstrap_servers = ['localhost:9092', 'localhost:9093', 'localhost:9094']
 input_topic = 'DWD_BASE_LOG'

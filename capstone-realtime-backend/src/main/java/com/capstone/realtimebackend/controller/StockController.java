@@ -23,15 +23,22 @@ public class StockController {
     @CrossOrigin(origins = "*")
     @GetMapping("stock/{symbol}/info")
     public Map<String, Object> stock_info(@PathVariable("symbol") String symbol) {
-//        return stockService.getStockInfo(symbol);
-//        return stockService.getStockHistPrices(symbol);
-//        return stockService.getStockHistMeta(symbol);
-//        return stockService.getStockMajorHolders(symbol);
-//        return stockService.getStockShareCount(symbol);
-//        return stockService.getStockEarnings(symbol);
-//        return stockService.getStockNews(symbol);
         return stockService.getWebStockInfo(symbol);
     }
+
+    /**
+     * http://localhost:8080/stock/APPL
+     */
+    @CrossOrigin(origins = "*")
+    @GetMapping("stock/{symbol}")
+    public StockAllDTO stock_all(@PathVariable("symbol") String symbol) {
+        return stockService.getWebStockAll(symbol);
+    }
+
+
+    /**
+     * http://localhost:8080/stock/APPL/chart
+     */
 
     @CrossOrigin(origins = "*")
     @GetMapping("stock/{symbol}/chart")

@@ -26,6 +26,7 @@ public class StockController {
         return stockService.getWebStockInfo(symbol);
     }
 
+
     /**
      * http://localhost:8080/stock/APPL
      */
@@ -39,7 +40,6 @@ public class StockController {
     /**
      * http://localhost:8080/stock/APPL/chart
      */
-
     @CrossOrigin(origins = "*")
     @GetMapping("stock/{symbol}/chart")
     public HistPriceDTO stock_chart(@PathVariable("symbol") String symbol) {

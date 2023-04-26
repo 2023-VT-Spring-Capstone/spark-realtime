@@ -17,11 +17,14 @@ case class PostInfo (
                      var subreddit: String,
                      var ticker: String,
                      var label: String,
+                     var bullish: Float,
+                     var neutral: Float,
+                     var bearish: Float,
                      var sentiment: String,
 
                      var date: String
                    ){
   def this() {
-    this(null, null, null, null, null, null, null, null, null, 0L, 0F, 0L, null, null, null, null, null, null)
+    this(null, null, null, null, null, null, null, null, null, 0L, 0F, 0L, null, null, null, null, 0F, 0F, 0F, null, null)
   }
 }

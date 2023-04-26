@@ -101,13 +101,13 @@ def send_to_kafka(topic, post, subreddit_name, ticker, label):
             "subreddit": subreddit_name,
             "ticker": ticker,
             "label": label,
-            "sentiment": None
+            "sentiment": None,
         }
         if post_data['author'] is not None:
             post_data['author'] = post_data['author'].name
 
         local_time = datetime.utcfromtimestamp(post_data['created_time']).replace(tzinfo=pytz.utc, microsecond=0).astimezone(local_timezone)
-        post_data['created_time'] = local_time.strftime('%Y-%m-%d %H:%M:%S.%fZ')
+        post_data['created_time'] = local_time.strftime('%Y-%m-%d %H:%M:%S')
 
         producer.send(topic, value=post_data)
 
@@ -129,7 +129,6 @@ def fetch_and_send_posts(subreddit_name_list, ticker):
 
 
 # Define function to listen to active user count
-# TODO: use this user count on related page
 def listen_active_user_count(subreddit_name_list, ticker):
     active_user_count = 0
     for subreddit_name in subreddit_name_list:
@@ -138,13 +137,17 @@ def listen_active_user_count(subreddit_name_list, ticker):
     print(f"{ticker}: Active user count: {active_user_count}")
 
 
-# Define function to listen for new posts
 def listen_new_posts(subreddit_name_list, ticker):
     for subreddit_name in subreddit_name_list:
         sub = reddit.subreddit(subreddit_name)
         for post in sub.new(limit=50):
-            send_to_kafka('DWD_BASE_LOG', post, subreddit_name, ticker, "new")
-
+            # Get post's creation timestamp
+            post_created_utc = datetime.utcfromtimestamp(post.created_utc)
+            # Get current date in UTC timezone
+            current_utc_time = datetime.utcnow().replace(tzinfo=pytz.utc)
+            # Compare post's creation timestamp with current date
+            if post_created_utc.date() == current_utc_time.date():
+                send_to_kafka('DWD_BASE_LOG', post, subreddit_name, ticker, "new")
 
 # Update hot/top/controversial posts
 def htc_type_handler():
@@ -160,7 +163,6 @@ def htc_type_handler():
     for th in threads:
         th.join()
 
-
 # Listen on 1.new posts and 2.active user counts
 def new_active_handler():
     threads_realtime = []
@@ -170,11 +172,13 @@ def new_active_handler():
         subreddit_names = subreddit["subreddit_names"]
 
         listen_new_post_thread = threading.Thread(target=listen_new_posts, args=(subreddit_names, symbol))
+
         listen_active_user_count_thread = threading.Thread(target=listen_active_user_count,
                                                            args=(subreddit_names, symbol))
 
         listen_new_post_thread.start()
         listen_active_user_count_thread.start()
+
         threads_realtime.append(listen_new_post_thread)
         threads_realtime.append(listen_active_user_count_thread)
 

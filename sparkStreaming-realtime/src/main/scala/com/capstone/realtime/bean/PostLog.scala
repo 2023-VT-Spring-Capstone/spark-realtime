@@ -17,6 +17,9 @@ case class PostLog (
                      subreddit: String,
                      ticker: String,
                      label: String,
+                     bullish: Float,
+                     neutral: Float,
+                     bearish: Float,
                      sentiment: String
                    ){
 

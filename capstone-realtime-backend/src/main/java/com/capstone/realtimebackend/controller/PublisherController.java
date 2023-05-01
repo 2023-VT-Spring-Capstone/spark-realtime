@@ -12,14 +12,15 @@ public class PublisherController {
     @Autowired
     PublisherService publisherService;
 
-    //http://localhost/detailByItem?date=2023-04-15&keyWord=bank&pageNo=1&pageSize=20
+    //http://localhost/detailByItem?startDate=2023-04-15&endDate=2023-04-18&keyWord=bank&pageNo=1&pageSize=20
     @CrossOrigin(origins = "*")
     @GetMapping("detailByItem")
-    public Map<String, Object> detailByItem(@RequestParam("date") String date ,
+    public Map<String, Object> detailByItem(@RequestParam(value = "startDate" , required = false) String startDate ,
+                                            @RequestParam(value = "endDate" , required = false) String endDate ,
                                             @RequestParam(value = "keyWord" , required = false, defaultValue = "stock") String keyWord ,
                                             @RequestParam(value ="pageNo" , required = false  , defaultValue = "1") Integer pageNo ,
                                             @RequestParam(value = "pageSize" , required = false , defaultValue = "20") Integer pageSize){
-        Map<String, Object> results =  publisherService.doDetailByItem(date, keyWord, pageNo, pageSize);
+        Map<String, Object> results =  publisherService.doDetailByItem(startDate, endDate, keyWord, pageNo, pageSize);
         return results ;
     }
 }

@@ -7,5 +7,5 @@ public interface PublisherMapper {
 
     List<Map<String, Object>> searchPost(String td);
 
-    Map<String, Object> searchDetailByItem(String date, String keyWord, int from, Integer pageSize);
+    Map<String, Object> searchDetailByItem(String startDate, String endDate, String keyWord, int from, Integer pageSize);
 }

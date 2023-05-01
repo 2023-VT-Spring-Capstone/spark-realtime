@@ -70,7 +70,10 @@ public class StockServiceImpl implements StockService {
         HistPriceDTO histPriceDTO = new HistPriceDTO();
         histPriceDTO.setDatetimeList(histPrices.stream().map(HistPrice::getDatetime).collect(Collectors.toList()));
         histPriceDTO.setClosePriceList(histPrices.stream().map(HistPrice::getClosePrice).collect(Collectors.toList()));
-
+        histPriceDTO.setOpenPriceList(histPrices.stream().map(HistPrice::getOpenPrice).collect(Collectors.toList()));
+        histPriceDTO.setHighPriceList(histPrices.stream().map(HistPrice::getHighPrice).collect(Collectors.toList()));
+        histPriceDTO.setLowPriceList(histPrices.stream().map(HistPrice::getLowPrice).collect(Collectors.toList()));
+        histPriceDTO.setVolumeList(histPrices.stream().map(HistPrice::getVolume).collect(Collectors.toList()));
 //        System.out.println("symbol=" + symbol);
 //        System.out.println("result = " + histPriceDTO);
         return histPriceDTO;

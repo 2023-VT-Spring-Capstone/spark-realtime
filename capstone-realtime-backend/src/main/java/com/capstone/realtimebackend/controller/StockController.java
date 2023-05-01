@@ -17,7 +17,7 @@ public class StockController {
     StockService stockService;
 
     /**
-     * http://localhost:8080/stock/APPL/info
+     * http://localhost/stock/APPL/info
      */
 
     @CrossOrigin(origins = "*")
@@ -28,7 +28,7 @@ public class StockController {
 
 
     /**
-     * http://localhost:8080/stock/APPL
+     * http://localhost/stock/APPL
      */
     @CrossOrigin(origins = "*")
     @GetMapping("stock/{symbol}")
@@ -38,7 +38,7 @@ public class StockController {
 
 
     /**
-     * http://localhost:8080/stock/APPL/chart
+     * http://localhost/stock/APPL/chart
      */
     @CrossOrigin(origins = "*")
     @GetMapping("stock/{symbol}/chart")

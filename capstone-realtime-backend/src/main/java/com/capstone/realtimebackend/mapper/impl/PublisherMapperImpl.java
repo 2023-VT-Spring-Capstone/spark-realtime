@@ -3,15 +3,16 @@ package com.capstone.realtimebackend.mapper.impl;
 import com.capstone.realtimebackend.mapper.PublisherMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.ElasticsearchStatusException;
+import org.elasticsearch.action.admin.indices.get.GetIndexRequest;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.client.IndicesClient;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.text.Text;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.MatchQueryBuilder;
-import org.elasticsearch.index.query.Operator;
-import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.*;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.rest.RestStatus;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
@@ -20,7 +21,9 @@ import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import javax.management.Query;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,18 +35,39 @@ public class PublisherMapperImpl implements PublisherMapper {
 
     @Autowired
     RestHighLevelClient esClient;
-
     private String indexNamePrefix = "reddit_post_";
 
     @Override
-    public Map<String, Object> searchDetailByItem(String date, String keyWord, int from, Integer pageSize) {
+    public Map<String, Object> searchDetailByItem(String startDate, String endDate, String keyWord, int from, Integer pageSize) {
         HashMap<String, Object> results = new HashMap<>();
 
-        String indexName  = indexNamePrefix + date ;
-        SearchRequest searchRequest = new SearchRequest(indexName);
+        List<String> datesList = new ArrayList<>();
+        LocalDate start = LocalDate.parse(startDate);
+        LocalDate end = LocalDate.parse(endDate);
+        while (!start.isAfter(end)) {
+
+            String indexNameFull = indexNamePrefix + start.toString();
+            GetIndexRequest request = new GetIndexRequest().indices(indexNameFull);
+            boolean exists = false;
+            try {
+                exists = esClient.indices().exists(request, RequestOptions.DEFAULT);
+            } catch (IOException e) {
+                log.error("Error while checking index existence for " + indexNameFull, e);
+            }
+            if (exists) {
+                datesList.add(indexNameFull);
+                log.warn("Index " + indexNameFull + " exists.");
+            } else {
+                log.warn("Index " + indexNameFull + " does not exist.");
+            }
+            start = start.plusDays(1);
+        }
+
+        String[] datesArray = datesList.toArray(new String[0]);
+        // Create a search request with the array of dates
+        SearchRequest searchRequest = new SearchRequest(datesArray);
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 
-        //明细字段
         searchSourceBuilder.fetchSource(new String[]{
                 "created_time", "date", "id", "is_origin", "is_self", "label", "num_comments", "body",
                 "permalink","score","bearish", "neutral", "bullish", "sentiment","subreddit","ticker","title", "upvote_ratio", "url"}, null );
@@ -53,6 +77,8 @@ public class PublisherMapperImpl implements PublisherMapper {
         MatchQueryBuilder bodyQueryBuilder = QueryBuilders.matchQuery("body", keyWord).operator(Operator.OR);
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().should(titleQueryBuilder).should(bodyQueryBuilder);
 
+//        searchSourceBuilder.query(QueryBuilders.boolQuery().must(boolQueryBuilder).must(indicesQueryBuilder));
+
         searchSourceBuilder.query(boolQueryBuilder);
         searchSourceBuilder.from(from);
         searchSourceBuilder.size(pageSize);
@@ -60,17 +86,60 @@ public class PublisherMapperImpl implements PublisherMapper {
 
         searchSourceBuilder.highlighter(highlightBuilder);
 
+        // Create a search source builder with a terms aggregation
+        searchSourceBuilder.aggregation(
+                AggregationBuilders.terms("sentiment_count").field("sentiment.keyword"));
+
+        searchSourceBuilder.aggregation(
+                AggregationBuilders.terms("subreddit_source").field("subreddit.keyword"));
+
         searchRequest.source(searchSourceBuilder);
         try {
             SearchResponse searchResponse = esClient.search(searchRequest, RequestOptions.DEFAULT);
+
+            // Get the terms aggregation from the search response and retrieve the number of buckets
+            Terms sentimentAgg = searchResponse.getAggregations().get("sentiment_count");
+            Terms subredditAgg = searchResponse.getAggregations().get("subreddit_source");
+
+            Map<String, Integer> dataSourceSubredditCount = new HashMap<>();
+            for (Terms.Bucket bucket : subredditAgg.getBuckets()) {
+                String subreddit = bucket.getKeyAsString();
+                Integer originCount = Math.toIntExact(bucket.getDocCount());
+                log.warn(subreddit + " count: " + originCount);
+                if (dataSourceSubredditCount.containsKey(subreddit)) {
+                    int existingValue = dataSourceSubredditCount.get(subreddit);
+                    dataSourceSubredditCount.put(subreddit, existingValue + originCount);
+                } else {
+                    dataSourceSubredditCount.put(subreddit, originCount);
+                }
+            }
+
             long total = searchResponse.getHits().getTotalHits().value;
+            long bullishCount = 0;
+            long neutralCount = 0;
+            long bearishCount = 0;
+            // backward compatibility, some sentiment still classified as positive / negative in previous ver.
+            for (Terms.Bucket bucket : sentimentAgg.getBuckets()) {
+                String sentimentValue = bucket.getKeyAsString();
+                if (sentimentValue.equals("bullish") || sentimentValue.equals("positive")) {
+                    bullishCount += bucket.getDocCount();
+                } else if (sentimentValue.equals("neutral")) {
+                    neutralCount += bucket.getDocCount();
+                } else if (sentimentValue.equals("bearish") || sentimentValue.equals("negative")) {
+                    bearishCount += bucket.getDocCount();
+                }
+            }
+
+
             SearchHit[] searchHits = searchResponse.getHits().getHits();
             ArrayList<Map<String, Object>> sourceMaps = new ArrayList<>();
 
+
             for (SearchHit searchHit : searchHits) {
-                //提取source
+                //hits._source
                 Map<String, Object> sourceMap = searchHit.getSourceAsMap();
-                //提取高亮
+
+                //highlight
                 Map<String, HighlightField> highlightFields = searchHit.getHighlightFields();
 
                 HighlightField highlightFieldTitle = highlightFields.get("title");
@@ -96,12 +165,16 @@ public class PublisherMapperImpl implements PublisherMapper {
                     sourceMap.put("body", highLightBody);
                 sourceMaps.add(sourceMap);
             }
-            results.put("total",total );
+            results.put("total", total);
+            results.put("bullishCount", bullishCount);
+            results.put("neutralCount", neutralCount);
+            results.put("bearishCount", bearishCount);
             results.put("detail", sourceMaps);
+            results.put("dataOrigin", dataSourceSubredditCount);
             return results ;
         } catch (ElasticsearchStatusException ese){
             if(ese.status() == RestStatus.NOT_FOUND){
-                log.warn( indexName +" Not exists......");
+                log.warn( " Not exists......");
             }
         } catch (IOException e) {
             e.printStackTrace();

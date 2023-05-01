@@ -6,5 +6,5 @@ import java.util.Map;
 public interface PublisherService {
     List<Map<String, Object>> doPostRealtime(String td);
 
-    Map<String, Object> doDetailByItem(String date, String keyWord, Integer pageNo, Integer pageSize);
+    Map<String, Object> doDetailByItem(String startDate, String endDate, String keyWord, Integer pageNo, Integer pageSize);
 }

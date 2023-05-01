@@ -4,7 +4,6 @@ import com.capstone.realtimebackend.mapper.PublisherMapper;
 import com.capstone.realtimebackend.service.PublisherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 import java.util.Map;
@@ -20,9 +19,9 @@ public class PublisherServiceImpl implements PublisherService {
 
 
     @Override
-    public Map<String, Object> doDetailByItem(String date, String keyWord, Integer pageNo, Integer pageSize) {
+    public Map<String, Object> doDetailByItem(String startDate, String endDate, String keyWord, Integer pageNo, Integer pageSize) {
         int from = (pageNo - 1) * pageSize;
-        Map<String, Object> searchResults = publisherMapper.searchDetailByItem(date, keyWord, from, pageSize);
+        Map<String, Object> searchResults = publisherMapper.searchDetailByItem(startDate, endDate, keyWord, from, pageSize);
         return searchResults;
     }
 }
